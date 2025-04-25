@@ -35,6 +35,12 @@ jobs:
         mkdir -p downloaded_site
         wget -r -np -nH --cut-dirs=1 -R "index.html*" $GOOGLE_SITES_URL -P ./downloaded_site
 
+    # Step 4.5: ダウンロードしたサイトをZIP化
+    - name: Zip downloaded site
+      run: |
+        cd downloaded_site
+        zip -r ../site.zip .
+
     # Step 5: Google Driveにアップロード
     - name: Upload to Google Drive
       env:
