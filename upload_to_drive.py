@@ -23,7 +23,7 @@ drive_service = build('drive', 'v3', credentials=credentials)
 
 # アップロード処理（例）
 file_metadata = {'name': 'site.zip'}
-media = MediaFileUpload('path/to/your/site.zip', mimetype='application/zip')
+media = MediaFileUpload('site.zip', mimetype='application/zip')
 file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
 print(f'File ID: {file["id"]}')
