@@ -47,3 +47,7 @@ jobs:
         GDRIVE_CREDENTIALS_JSON: ${{ secrets.GDRIVE_CREDENTIALS_JSON }}  # GitHub Secretsからcredentials.jsonを取得
       run: |
         python upload_to_drive.py
+
+    - name: Check site.zip
+      run: |
+        ls -lh site.zip || echo "site.zip が見つかりません"
