@@ -1,40 +1,45 @@
-name: Upload Site to Google Drive
+name: Upload Google Sites to Drive
 
 on:
   schedule:
     - cron: '* * * * *'  # 毎分実行
-  workflow_dispatch:  # 手動でも実行可能
+  workflow_dispatch:
 
 jobs:
-  upload-and-update:
+  upload_to_drive:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    # Step 1: リポジトリの内容をチェックアウト
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
+    # Step 2: Pythonのセットアップ
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
 
-      - name: Install dependencies
-        run: pip install google-api-python-client google-auth google-auth-oauthlib
+    # Step 3: 必要なライブラリをインストール
+    - name: Install dependencies
+      run: |
+        pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
 
-      - name: Download site and zip it
-        run: bash site_download.sh
+    # Step 4: Google Sitesの内容をwgetでダウンロード
+    - name: Download Google Sites content (using wget)
+      env:
+        GOOGLE_SITES_URL: ${{ secrets.GOOGLESITES_URL }}  # GitHub SecretsからURLを取得
+      run: |
+        # wgetを使ってGoogle Sitesからサイトをダウンロード
+        echo "Downloading site from $GOOGLE_SITES_URL"
+        mkdir -p downloaded_site
+        wget -r -np -nH --cut-dirs=1 -R "index.html*" $GOOGLE_SITES_URL -P ./downloaded_site
 
-      - name: Upload to Google Drive
-        run: python upload_to_drive.py
-        env:
-          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
-          GOOGLE_CREDS: ${{ secrets.GDRIVE_CREDENTIALS_JSON }}
-
-      - name: Update latest.txt with the download link
-        run: |
-          echo "https://drive.google.com/uc?export=download&id=$(cat latest_file_id.txt)" > latest.txt
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add latest.txt
-          git commit -m "Update latest.txt"
-          git push
+    # Step 5: Google Driveにアップロード
+    - name: Upload to Google Drive
+      env:
+        GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}  # Google DriveのフォルダID
+        GOOGLE_CREDENTIALS_JSON: ${{ secrets.GDRIVE_CREDENTIALS_JSON }}  # Google Drive APIの認証情報
+      run: |
+        # ダウンロードしたGoogle Sitesの内容をGoogle Driveにアップロード
+        python upload_to_drive.py
