@@ -1,30 +1,29 @@
 import os
-import google.auth
+import base64
+import json
+from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-# 認証情報とサービスをセットアップ
-creds, project = google.auth.load_credentials_from_file('credentials.json')
-drive_service = build('drive', 'v3', credentials=creds)
+# GitHub Secretsからbase64エンコードされたcredentials.jsonの内容を取得
+credentials_base64 = os.environ.get('GDRIVE_CREDENTIALS_JSON')
+if credentials_base64 is None:
+    raise ValueError('GDRIVE_CREDENTIALS_JSON not set in environment variables')
 
-# アップロードするファイルのパス
-file_name = 'site.zip'
-file_path = os.path.join(os.getcwd(), file_name)
+# base64デコードしてcredentials.jsonを生成
+credentials_json = base64.b64decode(credentials_base64)
 
-# Driveにアップロードする
-file_metadata = {'name': file_name, 'parents': ['your-folder-id']}
-media = MediaFileUpload(file_path, mimetype='application/zip')
+# credentials.jsonを読み込んで認証情報を取得
+credentials = service_account.Credentials.from_service_account_info(
+    json.loads(credentials_json), scopes=["https://www.googleapis.com/auth/drive"]
+)
 
-# ファイルをDriveにアップロード
-uploaded_file = drive_service.files().create(
-    media_body=media, body=file_metadata, fields='id'
-).execute()
+# Google Drive APIクライアントを作成
+drive_service = build('drive', 'v3', credentials=credentials)
 
-# アップロードしたファイルのIDを取得
-file_id = uploaded_file['id']
+# アップロード処理（例）
+file_metadata = {'name': 'site.zip'}
+media = MediaFileUpload('path/to/your/site.zip', mimetype='application/zip')
+file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
 
-# ファイルIDを保存（GitHub Actionsで利用）
-with open('latest_file_id.txt', 'w') as f:
-    f.write(file_id)
-
-print(f"Uploaded file ID: {file_id}")
+print(f'File ID: {file["id"]}')
