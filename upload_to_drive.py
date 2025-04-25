@@ -21,9 +21,15 @@ credentials = service_account.Credentials.from_service_account_info(
 # Google Drive APIクライアントを作成
 drive_service = build('drive', 'v3', credentials=credentials)
 
-# アップロード処理（例）
+# アップロード処理
 file_metadata = {'name': 'site.zip'}
 media = MediaFileUpload('site.zip', mimetype='application/zip')
-file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+uploaded_file = service.files().create(
+    body=file_metadata,
+    media_body=media,
+    fields='id, webViewLink'
+).execute()
 
-print(f'File ID: {file["id"]}')
+print("アップロード成功")
+print("ファイルID:", uploaded_file.get('id'))
+print("アクセスURL:", uploaded_file.get('webViewLink'))
