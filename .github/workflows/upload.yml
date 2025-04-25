@@ -2,7 +2,7 @@ name: Upload Google Sites to Drive
 
 on:
   schedule:
-    - cron: '* * * * *'  # 毎分実行
+    - cron: '*/5 * * * *'  # 5分おきに実行
   workflow_dispatch:
 
 jobs:
@@ -38,8 +38,6 @@ jobs:
     # Step 5: Google Driveにアップロード
     - name: Upload to Google Drive
       env:
-        GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}  # Google DriveのフォルダID
-        GOOGLE_CREDENTIALS_JSON: ${{ secrets.GDRIVE_CREDENTIALS_JSON }}  # Google Drive APIの認証情報
+        GDRIVE_CREDENTIALS_JSON: ${{ secrets.GDRIVE_CREDENTIALS_JSON }}  # GitHub Secretsからcredentials.jsonを取得
       run: |
-        # ダウンロードしたGoogle Sitesの内容をGoogle Driveにアップロード
         python upload_to_drive.py
