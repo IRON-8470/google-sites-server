@@ -24,7 +24,7 @@ drive_service = build('drive', 'v3', credentials=credentials)
 # アップロード処理
 file_metadata = {'name': 'site.zip'}
 media = MediaFileUpload('site.zip', mimetype='application/zip')
-uploaded_file = service.files().create(
+uploaded_file = drive_service.files().create(
     body=file_metadata,
     media_body=media,
     fields='id, webViewLink'
