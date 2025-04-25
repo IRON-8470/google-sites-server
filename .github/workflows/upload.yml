@@ -1,0 +1,40 @@
+name: Upload Site to Google Drive
+
+on:
+  schedule:
+    - cron: '* * * * *'  # 毎分実行
+  workflow_dispatch:  # 手動でも実行可能
+
+jobs:
+  upload-and-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install google-api-python-client google-auth google-auth-oauthlib
+
+      - name: Download site and zip it
+        run: bash site_download.sh
+
+      - name: Upload to Google Drive
+        run: python upload_to_drive.py
+        env:
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GOOGLE_CREDS: ${{ secrets.GDRIVE_CREDENTIALS_JSON }}
+
+      - name: Update latest.txt with the download link
+        run: |
+          echo "https://drive.google.com/uc?export=download&id=$(cat latest_file_id.txt)" > latest.txt
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add latest.txt
+          git commit -m "Update latest.txt"
+          git push
