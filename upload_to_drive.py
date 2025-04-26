@@ -81,3 +81,26 @@ drive_service.permissions().create(
 
 # 公開設定完了メッセージ
 print("リンクを知っている全員に公開設定しました")
+
+# 最新のzipファイルへの直リンクを生成
+file_id = uploaded_file.get('id')
+download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+
+# latest.txtを更新
+latest_txt_metadata = {
+    'name': 'latest.txt',
+    'parents': [folder_id]
+}
+
+# 最新URLをlatest.txtに書き込み
+with open('latest.txt', 'w') as f:
+    f.write(download_url)
+
+# latest.txtをGoogle Driveにアップロード
+media = MediaFileUpload('latest.txt', mimetype='text/plain')
+drive_service.files().create(
+    body=latest_txt_metadata,
+    media_body=media
+).execute()
+
+print("latest.txtを更新しました。")
