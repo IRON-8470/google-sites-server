@@ -29,7 +29,7 @@ credentials = service_account.Credentials.from_service_account_info(
 drive_service = build('drive', 'v3', credentials=credentials)
 
 # GDRIVE_FOLDER_ID 環境変数からアップロード先フォルダIDを取得
-folder_id = os.environ.get('GDRIVE_FOLDER_ID')
+folder_id = os.environ.get('1sCwTkxg4s3j_qbMnfUP8Ewrw4PmYoQNq')
 if folder_id is None:
     raise ValueError('GDRIVE_FOLDER_ID not set in environment variables')
 
