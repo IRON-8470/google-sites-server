@@ -5,7 +5,12 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-print("GDRIVE_FOLDER_ID:", os.environ.get('GDRIVE_FOLDER_ID'))
+# 環境変数の確認
+folder_id = os.environ.get('GDRIVE_FOLDER_ID')
+if folder_id is None:
+    print("GDRIVE_FOLDER_IDが設定されていません")
+else:
+    print(f"GDRIVE_FOLDER_ID: {folder_id}")
 
 # GitHub Secretsからbase64エンコードされたcredentials.jsonの内容を取得
 credentials_base64 = os.environ.get('GDRIVE_CREDENTIALS_JSON')
