@@ -42,6 +42,16 @@ with zipfile.ZipFile('site.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
         for file in files:
             zipf.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), 'downloaded_site'))
 
+current_directory = os.getcwd()  # 現在の作業ディレクトリ
+zip_files = [f for f in os.listdir(current_directory) if f.endswith('.zip')]  # ZIPファイルのみをフィルタ
+
+if zip_files:
+    print("フォルダー内のZIPファイル:")
+    for zip_file in zip_files:
+        print(zip_file)  # 各ZIPファイルの名前を表示
+else:
+     print("ZIPファイルはフォルダーにありません")
+
 # アップロード処理（フォルダを指定）
 file_metadata = {
     'name': 'site.zip',
