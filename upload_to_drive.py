@@ -32,12 +32,11 @@ if os.path.exists('site.zip'):
     os.remove('site.zip')
     print("古い site.zip を削除しました")
 
-# 新しくZIPファイルを作成する処理
-# ダウンロードしたサイトのディレクトリを指定（例えば "downloaded_site"）
+# ダウンロードしたサイトをZIP化
+# ここで "downloaded_site" の中身をZIP化
 if not os.path.exists('downloaded_site'):
     raise ValueError('ダウンロードしたサイトのディレクトリが見つかりません')
 
-# ダウンロードしたサイトをZIP化
 with zipfile.ZipFile('site.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
     for root, dirs, files in os.walk('downloaded_site'):
         for file in files:
