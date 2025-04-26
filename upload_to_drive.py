@@ -4,6 +4,7 @@ import json
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+import zipfile
 
 # GitHub Secretsからbase64エンコードされたcredentials.jsonの内容を取得
 credentials_base64 = os.environ.get('GDRIVE_CREDENTIALS_JSON')
@@ -30,6 +31,17 @@ if folder_id is None:
 if os.path.exists('site.zip'):
     os.remove('site.zip')
     print("古い site.zip を削除しました")
+
+# 新しくZIPファイルを作成する処理
+# ダウンロードしたサイトのディレクトリを指定（例えば "downloaded_site"）
+if not os.path.exists('downloaded_site'):
+    raise ValueError('ダウンロードしたサイトのディレクトリが見つかりません')
+
+# ダウンロードしたサイトをZIP化
+with zipfile.ZipFile('site.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
+    for root, dirs, files in os.walk('downloaded_site'):
+        for file in files:
+            zipf.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), 'downloaded_site'))
 
 # アップロード処理（フォルダを指定）
 file_metadata = {
