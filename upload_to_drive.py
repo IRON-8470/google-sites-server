@@ -26,6 +26,11 @@ folder_id = os.environ.get('GDRIVE_FOLDER_ID')
 if folder_id is None:
     raise ValueError('GDRIVE_FOLDER_ID not set in environment variables')
 
+# 既存の zip ファイルがあれば削除
+if os.path.exists('site.zip'):
+    os.remove('site.zip')
+    print("既存の site.zip を削除しました")
+
 # アップロード処理（フォルダを指定）
 file_metadata = {
     'name': 'site.zip',
@@ -38,11 +43,11 @@ uploaded_file = drive_service.files().create(
     fields='id, webViewLink'
 ).execute()
 
+# アップロード成功メッセージとファイル情報の表示
 print("アップロード成功")
 print("ファイルID:", uploaded_file.get('id'))
 print("アクセスURL:", uploaded_file.get('webViewLink'))
 
-# ★ここを追加する（B案）
 # リンクを知っている全員に公開設定
 drive_service.permissions().create(
     fileId=uploaded_file.get('id'),
@@ -53,16 +58,5 @@ drive_service.permissions().create(
     fields="id"
 ).execute()
 
+# 公開設定完了メッセージ
 print("リンクを知っている全員に公開設定しました")
-
-# (3) Drive内の最近のファイル一覧を表示（デバッグ用）
-results = drive_service.files().list(
-    pageSize=5,
-    orderBy="createdTime desc",
-    fields="files(id, name, webViewLink)"
-).execute()
-
-items = results.get('files', [])
-print("Drive上のファイル一覧（直近5件）:")
-for item in items:
-    print(f"{item['name']} - {item['webViewLink']}")
