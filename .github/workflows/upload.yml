@@ -29,6 +29,7 @@ jobs:
     - name: Download Google Sites content (using wget)
       env:
         GOOGLE_SITES_URL: ${{ secrets.GOOGLESITES_URL }}  # GitHub SecretsからURLを取得
+        GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}  # GitHub SecretsからGDriveフォルダIDを取得
       run: |
         # wgetを使ってGoogle Sitesからサイトをダウンロード
         echo "Downloading site from $GOOGLE_SITES_URL"
