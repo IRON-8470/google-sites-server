@@ -28,10 +28,20 @@ folder_id = os.environ.get('GDRIVE_FOLDER_ID')
 if folder_id is None:
     raise ValueError('GDRIVE_FOLDER_ID not set in environment variables')
 
-# 既存の site.zip ファイルがあれば削除
-if os.path.exists('site.zip'):
-    os.remove('site.zip')
-    print("古い site.zip を削除しました")
+# 既存の site.zip ファイルを削除
+results = drive_service.files().list(
+    q=f"name='site.zip' and '{folder_id}' in parents",
+    fields="files(id, name)"
+).execute()
+
+files = results.get('files', [])
+for file in files:
+    file_id = file['id']
+    file_name = file['name']
+    print(f"削除予定: {file_name} (ID: {file_id})")
+    drive_service.files().delete(fileId=file_id).execute()  # ファイルを削除
+
+print("古い site.zip を削除しました")
 
 # ダウンロードしたサイトをZIP化
 # ここで "downloaded_site" の中身をZIP化
@@ -60,7 +70,8 @@ print("アップロード成功")
 print("ファイルID:", uploaded_file.get('id'))
 print("アクセスURL:", uploaded_file.get('webViewLink'))
 
-# Google Drive内の最新のsite.zipリンクを作成
+# ★ここでGitHubの最新リンクを更新します
+# Google DriveのファイルIDを使ってダウンロードリンクを作成
 file_id = uploaded_file.get('id')
 download_link = f"https://drive.google.com/uc?export=download&id={file_id}"
 
