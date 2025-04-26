@@ -5,6 +5,8 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
+print("GDRIVE_FOLDER_ID:", os.environ.get('GDRIVE_FOLDER_ID'))
+
 # GitHub Secretsからbase64エンコードされたcredentials.jsonの内容を取得
 credentials_base64 = os.environ.get('GDRIVE_CREDENTIALS_JSON')
 if credentials_base64 is None:
