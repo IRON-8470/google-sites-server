@@ -42,15 +42,21 @@ with zipfile.ZipFile('site.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
         for file in files:
             zipf.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), 'downloaded_site'))
 
-current_directory = os.getcwd()  # 現在の作業ディレクトリ
-zip_files = [f for f in os.listdir(current_directory) if f.endswith('.zip')]  # ZIPファイルのみをフィルタ
+# Googleドライブ内のZIPファイルをリスト表示（デバッグ）
+def list_drive_zip_files():
+    query = "name contains 'site.zip' and mimeType = 'application/zip' and parents in '{}'".format(folder_id)
+    results = drive_service.files().list(q=query, fields="files(id, name)").execute()
+    items = results.get('files', [])
+    
+    if items:
+        print("Google Drive内のZIPファイル:")
+        for item in items:
+            print(f"{item['name']} (ID: {item['id']})")
+    else:
+        print("Google Drive内にZIPファイルはありません")
 
-if zip_files:
-    print("フォルダー内のZIPファイル:")
-    for zip_file in zip_files:
-        print(zip_file)  # 各ZIPファイルの名前を表示
-else:
-     print("ZIPファイルはフォルダーにありません")
+# Googleドライブ内のZIPファイルを確認（デバッグ）
+list_drive_zip_files()
 
 # アップロード処理（フォルダを指定）
 file_metadata = {
