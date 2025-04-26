@@ -26,10 +26,10 @@ folder_id = os.environ.get('GDRIVE_FOLDER_ID')
 if folder_id is None:
     raise ValueError('GDRIVE_FOLDER_ID not set in environment variables')
 
-# 既存の zip ファイルがあれば削除
+# 既存の site.zip ファイルがあれば削除
 if os.path.exists('site.zip'):
     os.remove('site.zip')
-    print("既存の site.zip を削除しました")
+    print("古い site.zip を削除しました")
 
 # アップロード処理（フォルダを指定）
 file_metadata = {
