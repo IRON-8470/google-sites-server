@@ -6,7 +6,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
 # 環境変数の確認
-folder_id = os.environ.get('GDRIVE_FOLDER_ID')
+folder_id = os.environ.get('1sCwTkxg4s3j_qbMnfUP8Ewrw4PmYoQNq')
 if folder_id is None:
     print("GDRIVE_FOLDER_IDが設定されていません")
 else:
