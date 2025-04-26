@@ -34,17 +34,17 @@ print("アップロード成功")
 print("ファイルID:", uploaded_file.get('id'))
 print("アクセスURL:", uploaded_file.get('webViewLink'))
 
-# (2) 指定ユーザーに共有（あなたのGmailアドレスに置き換える）
-target_email = os.environ.get('SHARE_WITH_EMAIL')  # GitHub Secretsで指定
-if target_email:
-    drive_service.permissions().create(
-        fileId=uploaded_file.get('id'),
-        body={"type": "user", "role": "writer", "emailAddress": target_email},
-        fields="id"
-    ).execute()
-    print(f"{target_email} に共有権限を付与しました")
-else:
-    print("SHARE_WITH_EMAIL が未設定なので共有せず")
+# ★ここを追加する（B案）
+drive_service.permissions().create(
+    fileId=uploaded_file.get('id'),
+    body={
+        "type": "anyone",
+        "role": "reader"
+    },
+    fields="id"
+).execute()
+
+print("リンクを知っている全員に公開設定しました")
 
 # (3) Drive内の最近のファイル一覧を表示（デバッグ用）
 results = drive_service.files().list(
