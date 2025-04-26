@@ -21,8 +21,16 @@ credentials = service_account.Credentials.from_service_account_info(
 # Google Drive APIクライアントを作成
 drive_service = build('drive', 'v3', credentials=credentials)
 
-# アップロード処理
-file_metadata = {'name': 'site.zip'}
+# GDRIVE_FOLDER_ID 環境変数からアップロード先フォルダIDを取得
+folder_id = os.environ.get('GDRIVE_FOLDER_ID')
+if folder_id is None:
+    raise ValueError('GDRIVE_FOLDER_ID not set in environment variables')
+
+# アップロード処理（フォルダを指定）
+file_metadata = {
+    'name': 'site.zip',
+    'parents': [folder_id]
+}
 media = MediaFileUpload('site.zip', mimetype='application/zip')
 uploaded_file = drive_service.files().create(
     body=file_metadata,
@@ -35,6 +43,7 @@ print("ファイルID:", uploaded_file.get('id'))
 print("アクセスURL:", uploaded_file.get('webViewLink'))
 
 # ★ここを追加する（B案）
+# リンクを知っている全員に公開設定
 drive_service.permissions().create(
     fileId=uploaded_file.get('id'),
     body={
