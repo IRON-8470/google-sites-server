@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Google SitesのURL
-SITES_URL="https://sites.google.com/your-site-url"
+SITES_URL="https://sites.google.com/view/niyariiko-ru/home"
 
 # ダウンロード先ディレクトリとファイル名
 DOWNLOAD_DIR="downloaded_site"
