@@ -20,9 +20,18 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # Install selenium and chromium dependencies
           pip install selenium
+          sudo apt-get update
           sudo apt-get install -y chromium-browser
-          sudo apt-get install -y chromedriver
+          
+          # Install chromedriver manually
+          CHROMIUM_VERSION=$(chromium-browser --version | awk '{print $2}')
+          DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROMIUM_VERSION%.*})
+          wget https://chromedriver.storage.googleapis.com/$DRIVER_VERSION/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
 
       - name: Download site with Selenium
         run: |
@@ -31,3 +40,4 @@ jobs:
       - name: Upload to Google Drive and Update GitHub
         run: |
           python upload_to_drive.py
+          
