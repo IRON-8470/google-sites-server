@@ -6,43 +6,35 @@ on:
   workflow_dispatch:
 
 jobs:
-  upload_to_drive:
+  selenium_setup:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
 
-    - name: Install dependencies
-      run: |
-        pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+      - name: Install dependencies
+        run: |
+          pip install selenium
+          sudo apt-get install -y chromium-browser
+          sudo apt-get install -y chromedriver
 
-    - name: Download Google Sites content (using wget)
-      env:
-        GOOGLE_SITES_URL: ${{ secrets.GOOGLESITES_URL }}
-        GDRIVE_FOLDER_ID:   ${{ secrets.GDRIVE_FOLDER_ID }}
-      run: |
-        echo "Downloading site from $GOOGLE_SITES_URL"
-        mkdir -p downloaded_site
-        wget -r -np -nH --cut-dirs=1 -R "index.html*" $GOOGLE_SITES_URL -P ./downloaded_site
+      - name: Download site with Selenium
+        run: |
+          python download_site_selenium.py
 
-    - name: Zip downloaded site
-      run: |
-        cd downloaded_site
-        zip -r ../site.zip .
+      - name: Create zip file
+        run: |
+          zip -r site.zip downloaded_site
 
-    - name: Upload to Google Drive
-      env:
-        GDRIVE_CREDENTIALS_JSON: ${{ secrets.GDRIVE_CREDENTIALS_JSON }}
-        GDRIVE_FOLDER_ID:         ${{ secrets.GDRIVE_FOLDER_ID }}
-      run: |
-        python upload_to_drive.py
+      - name: Upload zip to Google Drive
+        run: |
+          python upload_to_drive.py
 
-    - name: Check site.zip
-      run: |
-        ls -lh site.zip || echo "site.zip が見つかりません"
+      - name: Update latest.txt in GitHub repository
+        run: |
+          python update_latest_txt.py
