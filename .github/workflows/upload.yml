@@ -8,6 +8,7 @@ on:
 jobs:
   selenium_setup:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -27,14 +28,6 @@ jobs:
         run: |
           python download_site_selenium.py
 
-      - name: Create zip file
-        run: |
-          zip -r site.zip downloaded_site
-
-      - name: Upload zip to Google Drive
+      - name: Upload to Google Drive and Update GitHub
         run: |
           python upload_to_drive.py
-
-      - name: Update latest.txt in GitHub repository
-        run: |
-          python update_latest_txt.py
