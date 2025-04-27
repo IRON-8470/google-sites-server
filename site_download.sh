@@ -17,6 +17,7 @@ wget \
     --html-extension \       # HTMLは拡張子を.htmlにする
     --convert-links \        # ローカル用にリンク書き換え
     --no-parent \            # 親ディレクトリに行かない
+    --header="Cache-Control: no-cache" \
     --directory-prefix=$DOWNLOAD_DIR \  # 保存先
     "$SITES_URL"
 
